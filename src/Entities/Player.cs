@@ -37,6 +37,14 @@ public class Player : Entity
     Animator _animator;
 
 
+    void setNormalCollider(){
+        collider = new Collider(4,5,_width - 8,_height - 5,ColliderType.Solid);
+    }
+
+    void setFlippedCollider(){
+        collider = new Collider(4,0,_width - 8,_height - 6,ColliderType.Solid);
+    }
+
 
     public Player(float x, float y) : base(x, y)
     {
@@ -76,8 +84,7 @@ public class Player : Entity
         isStatic = false;
         hasPhysics = true;
 
-        collider = new Collider(0,0,_width,_height,ColliderType.Solid);
-
+        setNormalCollider();
 
         _animator.Add("idle", _idleAnimation);
         _animator.Add("run", _runAnimation);
@@ -179,5 +186,11 @@ public class Player : Entity
 
         // Reset vertical velocity to avoid unwanted bounce effect
         _velocity.Y = 0;
+
+        if(GravityDown == false){
+            setFlippedCollider();
+        }else{
+            setNormalCollider();
+        }
     }
 }

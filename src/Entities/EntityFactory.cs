@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Silk.NET.SDL;
 
 namespace TheAdventure
 {
@@ -12,7 +13,9 @@ namespace TheAdventure
         Banana = 3,
 
         Spike,
-        Saw,
+        SpikeInverted,
+        Saw, //Saw but sometimes is off
+        SawNeverStops,
         RockHead,
 
         MaxEntities
@@ -147,6 +150,36 @@ namespace TheAdventure
 
                     return spike;
                 }
+                case EntityId.SpikeInverted:
+                {
+                    TextureData spikeTextureData;
+                    // Load texture
+                    int spikeTextureId = Game.Instance.textures.LoadTexture(
+                        Path.Combine("assets/Traps/Spikes/", "Idle.png"),out spikeTextureData
+                    );
+
+                    Animation spikeIdleAnimation = new Animation(
+                        spriteSheetId: spikeTextureId,
+                        frameWidth: 16,
+                        frameHeight: 16,
+                        frameCount: 1,
+                        frameTime: 1f,
+                        loop: false
+                    );
+
+                    Trap spike = new Trap(
+                        x,
+                        y,
+                        16,
+                        16,
+                        spikeTextureId,
+                        spikeIdleAnimation
+                    );
+
+                    spike.id = (short)EntityId.SpikeInverted;
+                    spike.setFlippedVertically();
+                    return spike;
+                }
                 case EntityId.Saw:
                 {
                     TextureData sawOnTextureData,sawOffTextureData;
@@ -187,10 +220,57 @@ namespace TheAdventure
                         sawOnAnimation,
                         sawOffAnimation,
                         5f,
-                        0.5f
+                        2.5f
                     );
 
                     saw.id = (short)EntityId.Saw;
+
+                    return saw;
+                }
+                case EntityId.SawNeverStops:
+                {
+                    TextureData sawOnTextureData,sawOffTextureData;
+                    // Load texture
+                    int sawOnTextureId = Game.Instance.textures.LoadTexture(
+                        Path.Combine("assets/Traps/Saw/", "On (38x38).png"),out sawOnTextureData
+                    );
+
+                    int sawOffTextureId = Game.Instance.textures.LoadTexture(
+                        Path.Combine("assets/Traps/Saw/", "Off.png"),out sawOffTextureData
+                    );
+
+                    Animation sawOnAnimation = new Animation(
+                        spriteSheetId: sawOnTextureId,
+                        frameWidth: 38,
+                        frameHeight: 38,
+                        frameCount: 8,
+                        frameTime: 0.12f,
+                        loop: true
+                    );
+
+                    Animation sawOffAnimation = new Animation(
+                        spriteSheetId: sawOffTextureId,
+                        frameWidth: 38,
+                        frameHeight: 38,
+                        frameCount: 1,
+                        frameTime: 0.08f,
+                        loop: false
+                    );
+
+                    Saw saw = new Saw(
+                        x,
+                        y,
+                        38,
+                        38,
+                        sawOnTextureId,
+                        sawOffTextureId,
+                        sawOnAnimation,
+                        sawOffAnimation,
+                        5f,
+                        0f
+                    );
+
+                    saw.id = (short)EntityId.SawNeverStops;
 
                     return saw;
                 }

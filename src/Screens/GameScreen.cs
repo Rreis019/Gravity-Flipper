@@ -6,14 +6,63 @@ namespace TheAdventure;
 
 public class GameScreen : IScreen
 {
+    private int _backgroundTextureId;
+    private TextureData _backgroundTextureData;
+    private float _backgroundScrollY = 0.0f;
+
+
+
+    private void RenderBackground()
+    {
+        Game g = Game.Instance;
+
+        int minX = g.tiles.GetMinX();
+        int minY = g.tiles.GetMinY();
+
+        int maxX = g.tiles.GetMaxX();
+        int maxY = g.tiles.GetMaxY();
+
+        int texW = _backgroundTextureData.Width;
+        int texH = _backgroundTextureData.Height;
+
+        for (int y = minY - texH; y < maxY + texH; y += texH)
+        {
+            for (int x = minX - texW; x < maxX + texW; x += texW)
+            {
+                int drawY = (int)(y + (_backgroundScrollY % texH));
+
+
+                Rectangle<int> src = new Rectangle<int>(
+                    0,
+                    0,
+                    texW,
+                    texH
+                );
+
+                Rectangle<int> dest = new Rectangle<int>(
+                    x,
+                    drawY,
+                    texW,
+                    texH
+                );
+
+                Game.Instance.textures.Render(_backgroundTextureId,src,dest);
+            }
+        }
+    }
+
 
     public   void OnEnter()
     {
 
         Game g = Game.Instance;
 
-        //TODO : Just testing the entitites remove after and use levels
+        _backgroundTextureId = g.textures.LoadTexture(Path.Combine("assets/Background/", "Yellow.png"), out _backgroundTextureData);
 
+
+
+        //TODO : Just testing the entitites remove after and use levels
+        /*
         Entity p = EntityFactory.Create(EntityId.Player,150,100);
         Entity apple = EntityFactory.Create(EntityId.Apple,50,100);
 
@@ -41,6 +90,8 @@ public class GameScreen : IScreen
         
         g.tiles.Add(new Tile(0,0,0));
         g.tiles.Add(new Tile(1,32,0));
+        */
+        g.LoadLevel("levels/level2");
     }
     
 
@@ -52,11 +103,14 @@ public class GameScreen : IScreen
 
     public void Update(float dt, InputManager input)
     {
+        _backgroundScrollY += 30.0f * dt;
         Game.Instance.entities.Update(dt, input);
     }
 
     public void Render(IntPtr renderer, Sdl sdl)
     {
+        RenderBackground();
+
         Game.Instance.tiles.Render(renderer, sdl);
         Game.Instance.entities.Render(renderer, sdl);
     }

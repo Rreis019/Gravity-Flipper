@@ -10,6 +10,7 @@ public class Trap : Entity
     protected Animation _idleAnimation;
     protected int _width,_height;
     private int _textureId;
+    public RendererFlip flip = RendererFlip.None;
 
     public Trap(float x, float y,int width,int height,int textureId, Animation defaultAnimation)
         : base(x, y)
@@ -27,8 +28,17 @@ public class Trap : Entity
 
         isStatic   = true;
         hasPhysics = true;
-        collider = new Collider(0,0,_width,_height,ColliderType.Trigger);
+
+        collider = new Collider(0,8,_width,8,ColliderType.Trigger);
     }
+
+    public void setFlippedVertically()
+    {
+        collider = new Collider(0,0,_width,8,ColliderType.Trigger);
+        flip = RendererFlip.Vertical;
+    }
+
+
 
     public override void Update(float dt, InputManager input)
     {
@@ -38,8 +48,7 @@ public class Trap : Entity
 
     public override void OnCollide(Entity other)
     {
-        //TODO : Restart the level
-
+        Game.Instance.RestartLevel();
     }
 
 
@@ -51,7 +60,7 @@ public class Trap : Entity
             Rectangle<int> dest = new Rectangle<int>((int)_position.X,(int)_position.Y,(int)_width,(int)_height); 
             var src = _animator.GetFrame();
             int textureId = _animator.GetTextureId();
-            Game.Instance.textures.Render(textureId,src,dest);
+            Game.Instance.textures.Render(textureId,src,dest,flip);
         }
     }
 }

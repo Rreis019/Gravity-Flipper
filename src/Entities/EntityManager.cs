@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Silk.NET.SDL;
 using Silk.NET.Maths;
+    using System.IO;
 
 namespace TheAdventure;
 
@@ -184,4 +185,82 @@ public class EntityManager
             }
         }
     }
+
+
+    public void SaveEntitiesInFile(string path)
+    {
+        using StreamWriter writer = new StreamWriter(path);
+
+        foreach (var e in _entities)
+        {
+            if (!e.isActive)
+                continue;
+
+            // InvisibleCollider
+            if (e is InvisibleCollider col)
+            {
+                writer.WriteLine(
+                    $"{e.id} {e.position.X} {e.position.Y} {col.width} {col.height}"
+                );
+
+                continue;
+            }
+
+            // Normal entities
+            writer.WriteLine(
+                $"{e.id} {e.position.X} {e.position.Y}"
+            );
+        }
+    }
+
+    public void Clear()
+    {
+        _entities.Clear();
+    }
+    
+    public void LoadEntitiesFile(string path)
+    {
+        if (!File.Exists(path))
+            return;
+
+        _entities.Clear();
+
+        using StreamReader reader = new StreamReader(path);
+
+        string? line;
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] parts = line.Split(' ');
+
+            if (parts.Length < 3)
+                continue;
+
+            int rawId = int.Parse(parts[0]);
+
+            float x = float.Parse(parts[1]);
+            float y = float.Parse(parts[2]);
+
+            // InvisibleCollider
+            if (rawId == 1337)
+            {
+                if (parts.Length < 5)
+                    continue;
+
+                int width = int.Parse(parts[3]);
+                int height = int.Parse(parts[4]);
+
+                Add(new InvisibleCollider(x, y, width, height));
+            }
+            else
+            {
+                EntityId id = (EntityId)rawId;
+
+                Entity entity = EntityFactory.Create(id, x, y);
+
+                Add(entity);
+            }
+        }
+    }
+
 }

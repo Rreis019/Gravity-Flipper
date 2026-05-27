@@ -19,7 +19,7 @@ public class Game
     private IntPtr _window;
     private IntPtr _renderer;
     private Event _event;
-    private int baseWidth = 400,baseHeight = 224;
+    private int _baseWidth = 400,_baseHeight = 224;
     private bool _quit = false;
 
     //Managers
@@ -42,6 +42,9 @@ public class Game
     private Stopwatch _timer = new();
     private ulong _frames = 0;
 
+    private string currentLevel = "";
+    private bool _restartLevel = false;
+
     //Getters
     public IntPtr sdlImage { get; }
     public IntPtr window { get;  }
@@ -50,9 +53,14 @@ public class Game
     public IntPtr renderer => _renderer;
     public EntityManager entities => _entities;
     public TileManager tiles => _tiles;
+    public InputManager input => _input;
 
     public TileSet tileset => _tileset;
     public ScreenManager screens => _screens;
+
+
+    public int baseWidth => _baseWidth;
+    public int baseHeight => _baseHeight;
 
     public static Game Instance
     {
@@ -137,8 +145,8 @@ public class Game
             "Gravity Switcher",
             Sdl.WindowposUndefined,
             Sdl.WindowposUndefined,
-            baseWidth * 2,
-            baseHeight * 2,
+            _baseWidth * 2,
+            _baseHeight * 2,
             (uint)WindowFlags.Resizable
         );
 
@@ -155,7 +163,7 @@ public class Game
 
         _sdl.SetHint(Sdl.HintRenderScaleQuality, "0"); // pixel perfect
 
-        _sdl.RenderSetLogicalSize((Renderer*)_renderer, baseWidth, baseHeight);
+        _sdl.RenderSetLogicalSize((Renderer*)_renderer, _baseWidth, _baseHeight);
         _timer.Start();
 
     }
@@ -177,8 +185,6 @@ public class Game
         }
     }
 
-
- 
     private void Update()
     {
         var elapsed = _timer.Elapsed;
@@ -202,6 +208,36 @@ public class Game
 
         _sdl.RenderPresent(r);
         _frames++;
+
+        if(_restartLevel){
+            _restartLevel = false;
+            LoadLevel(currentLevel);
+        }
+    }
+
+    public void SaveLevel(string levelName)
+    {
+        string entityFile = $"{levelName}.ent";
+        string tileFile = $"{levelName}.tiles";
+
+        _entities.SaveEntitiesInFile(entityFile);
+        _tiles.SaveTilesFile(tileFile);
+    }
+
+    public void LoadLevel(string levelName)
+    {
+        string entityFile = $"{levelName}.ent";
+        string tileFile = $"{levelName}.tiles";
+
+        currentLevel = levelName;
+
+        _entities.LoadEntitiesFile(entityFile);
+        _tiles.LoadTilesFile(tileFile);
+    }
+
+    public void RestartLevel()
+    {
+        _restartLevel = true;
     }
 
     private unsafe void Shutdown()

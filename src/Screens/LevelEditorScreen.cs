@@ -5,6 +5,7 @@ namespace TheAdventure;
 
 public class LevelEditorScreen : IScreen
 {
+
     private enum EditMode
     {
         Collider,
@@ -26,7 +27,10 @@ public class LevelEditorScreen : IScreen
     private Vector2D<float> _dragStart;
     private Vector2D<float> _dragEnd;
 
-    public void OnEnter() { }
+    public void OnEnter() { 
+        Game.Instance.entities.Clear();
+        Game.Instance.tiles.Clear();
+    }
     public void OnExit() { }
 
     public void Update(float dt, InputManager input)
@@ -65,6 +69,15 @@ public class LevelEditorScreen : IScreen
                 Delete(_mouseWorld);
         }
 
+        if(input.IsKeyPressed(KeyCode.S))
+        {
+            Game.Instance.SaveLevel("level1");
+        }
+
+        if(input.IsKeyPressed(KeyCode.L))
+        {
+            Game.Instance.LoadLevel("tutorial");
+        }
 
         Game.Instance.entities.RemoveInactivesEntities();
     }
@@ -75,7 +88,45 @@ public class LevelEditorScreen : IScreen
         Game.Instance.entities.Render(renderer, sdl);
 
         DrawCursorPreview(renderer, sdl);
+
+        DrawUI();
     }
+
+    // -----------------Draw UI ----------------
+
+    private void DrawUI()
+    {
+        Game g = Game.Instance;
+
+        string mode = _mode switch
+        {
+            EditMode.Collider => "COLLIDER",
+            EditMode.Entity => "ENTITY",
+            EditMode.Tile => "TILE",
+            _ => "UNKNOWN"
+        };
+
+        float scale = 0.5f;
+        int gapY = 10;
+        int startY = 5;
+
+
+        g.defaultBlackFont.DrawText($"MODE: {mode}", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("C = COLLIDER MODE", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("O = ENTITY MODE", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("T = TILE MODE", 5, startY,scale); startY+= gapY;
+
+        g.defaultBlackFont.DrawText("WASD = MOVE CAMERA", 5, startY,scale); startY+= gapY;
+
+        g.defaultBlackFont.DrawText("LEFT CLICK = PLACE", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("RIGHT CLICK = DELETE", 5, startY,scale); startY+= gapY;
+
+        g.defaultBlackFont.DrawText("Q,E = CHANGE OBJECT", 5, startY,scale); startY+= gapY;
+
+        g.defaultBlackFont.DrawText("S = SAVE LEVEL", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("L = LOAD LEVEL", 5, startY,scale); startY+= gapY;
+    }
+
 
     // ---------------- PREVIEW ----------------
 
@@ -226,11 +277,19 @@ public class LevelEditorScreen : IScreen
     {
         var g = Game.Instance;
         var sdl = g.sdl;
+        var cam = g.mainCamera;
 
         float x = MathF.Min(a.X, b.X);
         float y = MathF.Min(a.Y, b.Y);
         float w = MathF.Abs(a.X - b.X);
         float h = MathF.Abs(a.Y - b.Y);
+
+        // camera transform
+        x = (x - cam.position.X) * cam.zoom;
+        y = (y - cam.position.Y) * cam.zoom;
+
+        w *= cam.zoom;
+        h *= cam.zoom;
 
         var r = (Renderer*)renderer;
 
@@ -244,7 +303,6 @@ public class LevelEditorScreen : IScreen
         sdl.SetRenderDrawColor(r, 255, 0, 0, 255);
         sdl.RenderDrawRect(r, in rect);
     }
-
     private void DrawTile(IntPtr renderer, Vector2D<float> pos) { 
         Game.Instance.tiles.RenderTile(_indexTile,Snap(pos.X),Snap(pos.Y));
     }
@@ -255,6 +313,8 @@ public class LevelEditorScreen : IScreen
         Entity e = EntityFactory.Create((EntityId)_indexEntity,pos.X,pos.Y);
         e.Render(renderer,sdl);
     }
+
+
 
     // ---------------- UTIL ----------------
 

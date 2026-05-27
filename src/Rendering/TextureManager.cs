@@ -83,4 +83,27 @@ public class TextureManager {
         }
     }
 
+
+    public unsafe void RenderUISimple(int textureId, TextureData textureData,int x,int y,float scale = 1.0f, RendererFlip flipMode = RendererFlip.None)
+    {
+        if (_texturePointers.TryGetValue(textureId, out var texture))
+        {
+            Game g = Game.Instance;
+
+            Rectangle<int> src = new Rectangle<int>((int)0,(int)0,(int)textureData.Width,(int)textureData.Height); 
+            Rectangle<int> dest = new Rectangle<int>((int)x,(int)y,(int)(textureData.Width* scale) ,(int)(textureData.Height * scale)); 
+
+            g.sdl.RenderCopyEx(
+                (Renderer*)g.renderer,
+                (Texture*)texture,
+                in src,
+                in dest,
+                0.0,
+                null,
+                flipMode
+            );
+        }
+    }
+
+
 }

@@ -40,6 +40,8 @@ public class Saw : Trap
         _isOn = false;
         _timer = 0f;
 
+
+        collider = new Collider(0,0,_width,height,ColliderType.Trigger);
         collider.type = ColliderType.None;
     }
 

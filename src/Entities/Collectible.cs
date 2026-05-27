@@ -29,7 +29,7 @@ public class Collectible : Entity
 
         isStatic   = true;
         hasPhysics = true;
-        collider = new Collider(0,0,_width,_height,ColliderType.Trigger);
+        collider = new Collider(8,8,16,16,ColliderType.Trigger);
     }
 
     public override void Update(float dt, InputManager input)
