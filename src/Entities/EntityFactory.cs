@@ -50,105 +50,49 @@ namespace TheAdventure
 
                 case EntityId.Apple:
                 {
-                    TextureData fruitTextureData;
-                    // Load texture
-                    int appleTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Items/Fruits/", "Apple.png"),out fruitTextureData
-                    );
+                    int tex = LoadTex(Fruit("Apple.png"));
 
-                    fruitIdleAnimation.textureId = appleTextureId;
+                    var anim = Anim(tex, 32, 32, 11, 0.08f, true);
 
-                    Collectible apple = new Collectible(
-                        x,
-                        y,
-                        32,
-                        32,
-                        appleTextureId,
-                        fruitIdleAnimation,
-                        1 // value / score
-                    );
-
-                    apple.id = (short)EntityId.Apple;
+                    var apple = new Collectible(x, y, 32, 32, tex, anim, 1)
+                    {
+                        id = (short)EntityId.Apple
+                    };
 
                     return apple;
                 }
                 case EntityId.Banana:
                 {
-                    TextureData bananasTextureData;
-                    // Load texture
-                    int bananasTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Items/Fruits/", "Bananas.png"),out bananasTextureData
-                    );
+                    int tex = LoadTex(Fruit("Bananas.png"));
 
-                    fruitIdleAnimation.textureId = bananasTextureId;
+                    var anim = Anim(tex, 32, 32, 11, 0.08f, true);
 
-                    Collectible banana = new Collectible(
-                        x,
-                        y,
-                        32,
-                        32,
-                        bananasTextureId,
-                        fruitIdleAnimation,
-                        1 // value / score
-                    );
-
-                    banana.id = (short)EntityId.Banana;
-
-                    return banana;
+                    return new Collectible(x, y, 32, 32, tex, anim, 1)
+                    {
+                        id = (short)EntityId.Banana
+                    };
                 }
                 case EntityId.Cherrie:
                 {
-                    TextureData cherrieTextureData;
-                    // Load texture
-                    int cherrieTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Items/Fruits/", "Cherries.png"),out cherrieTextureData
-                    );
+                    int tex = LoadTex(Fruit("Cherries.png"));
 
-                    fruitIdleAnimation.textureId = cherrieTextureId;
+                    var anim = Anim(tex, 32, 32, 11, 0.08f, true);
 
-                    Collectible cherrie = new Collectible(
-                        x,
-                        y,
-                        32,
-                        32,
-                        cherrieTextureId,
-                        fruitIdleAnimation,
-                        1 // value / score
-                    );
-
-                    cherrie.id = (short)EntityId.Cherrie;
-
-                    return cherrie;
+                    return new Collectible(x, y, 32, 32, tex, anim, 1)
+                    {
+                        id = (short)EntityId.Cherrie
+                    };
                 }
                 case EntityId.Spike:
                 {
-                    TextureData spikeTextureData;
-                    // Load texture
-                    int spikeTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Traps/Spikes/", "Idle.png"),out spikeTextureData
-                    );
+                    int tex = LoadTex(Trap("Spikes/Idle.png"));
 
-                    Animation spikeIdleAnimation = new Animation(
-                        spriteSheetId: spikeTextureId,
-                        frameWidth: 16,
-                        frameHeight: 16,
-                        frameCount: 1,
-                        frameTime: 1f,
-                        loop: false
-                    );
+                    var anim = Anim(tex, 16, 16, 1, 1f, false);
 
-                    Trap spike = new Trap(
-                        x,
-                        y,
-                        16,
-                        16,
-                        spikeTextureId,
-                        spikeIdleAnimation
-                    );
-
-                    spike.id = (short)EntityId.Spike;
-
-                    return spike;
+                    return new Trap(x, y, 16, 16, tex, anim)
+                    {
+                        id = (short)EntityId.Spike
+                    };
                 }
                 case EntityId.SpikeInverted:
                 {
@@ -181,97 +125,28 @@ namespace TheAdventure
                     return spike;
                 }
                 case EntityId.Saw:
-                {
-                    TextureData sawOnTextureData,sawOffTextureData;
-                    // Load texture
-                    int sawOnTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Traps/Saw/", "On (38x38).png"),out sawOnTextureData
-                    );
-
-                    int sawOffTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Traps/Saw/", "Off.png"),out sawOffTextureData
-                    );
-
-                    Animation sawOnAnimation = new Animation(
-                        spriteSheetId: sawOnTextureId,
-                        frameWidth: 38,
-                        frameHeight: 38,
-                        frameCount: 8,
-                        frameTime: 0.12f,
-                        loop: true
-                    );
-
-                    Animation sawOffAnimation = new Animation(
-                        spriteSheetId: sawOffTextureId,
-                        frameWidth: 38,
-                        frameHeight: 38,
-                        frameCount: 1,
-                        frameTime: 0.08f,
-                        loop: false
-                    );
-
-                    Saw saw = new Saw(
-                        x,
-                        y,
-                        38,
-                        38,
-                        sawOnTextureId,
-                        sawOffTextureId,
-                        sawOnAnimation,
-                        sawOffAnimation,
-                        5f,
-                        2.5f
-                    );
-
-                    saw.id = (short)EntityId.Saw;
-
-                    return saw;
-                }
                 case EntityId.SawNeverStops:
                 {
-                    TextureData sawOnTextureData,sawOffTextureData;
-                    // Load texture
-                    int sawOnTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Traps/Saw/", "On (38x38).png"),out sawOnTextureData
-                    );
+                    int on = LoadTex(Trap("Saw/On (38x38).png"));
+                    int off = LoadTex(Trap("Saw/Off.png"));
 
-                    int sawOffTextureId = Game.Instance.textures.LoadTexture(
-                        Path.Combine("assets/Traps/Saw/", "Off.png"),out sawOffTextureData
-                    );
+                    var onAnim = Anim(on, 38, 38, 8, 0.12f, true);
+                    var offAnim = Anim(off, 38, 38, 1, 0.08f, false);
 
-                    Animation sawOnAnimation = new Animation(
-                        spriteSheetId: sawOnTextureId,
-                        frameWidth: 38,
-                        frameHeight: 38,
-                        frameCount: 8,
-                        frameTime: 0.12f,
-                        loop: true
-                    );
+                    float speed = id == EntityId.SawNeverStops ? 0f : 2.5f;
 
-                    Animation sawOffAnimation = new Animation(
-                        spriteSheetId: sawOffTextureId,
-                        frameWidth: 38,
-                        frameHeight: 38,
-                        frameCount: 1,
-                        frameTime: 0.08f,
-                        loop: false
-                    );
-
-                    Saw saw = new Saw(
-                        x,
-                        y,
-                        38,
-                        38,
-                        sawOnTextureId,
-                        sawOffTextureId,
-                        sawOnAnimation,
-                        sawOffAnimation,
+                    var saw = new Saw(
+                        x, y,
+                        38, 38,
+                        on,
+                        off,
+                        onAnim,
+                        offAnim,
                         5f,
-                        0f
+                        speed
                     );
 
-                    saw.id = (short)EntityId.SawNeverStops;
-
+                    saw.id = (short)id;
                     return saw;
                 }
                 case EntityId.RockHead:
@@ -385,6 +260,27 @@ namespace TheAdventure
                 default:
                     throw new ArgumentException("Unknown EntityId: " + id);
             }
+        }
+
+
+        private static int LoadTex(string path)
+        {
+            return Game.Instance.textures.LoadTexture(path, out _);
+        }
+
+        private static string Fruit(string file)
+        {
+            return Path.Combine("assets/Items/Fruits/", file);
+        }
+
+        private static string Trap(string file)
+        {
+            return Path.Combine("assets/Traps/", file);
+        }
+
+        private static Animation Anim(int texId, int w, int h, int frames, float time, bool loop)
+        {
+            return new Animation(texId, w, h, frames, time, loop);
         }
     }
 }
