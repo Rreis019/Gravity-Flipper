@@ -23,7 +23,30 @@ The player controls a character that cannot jump. Instead, gravity can be flippe
 | A / Left Arrow  | Move Left    |
 | D / Right Arrow | Move Right   |
 | Space           | Flip Gravity |
-| Escape          | Exit Game    |
+
+
+## Level Editor Controls
+
+| Key            | Action                         |
+|----------------|--------------------------------|
+| Q | Previous object                             |
+| E | Next object                                 |
+| Left Click | Place entity/tile or start collider|
+| Right Click | Delete entity/tile                |
+| J | Save level manually                         |
+| K | Load level                                  |
+| M | Go to title screen                          |
+| C | Collider mode                               |
+| O | Entity mode                                 |
+| T | Tile mode                                   |
+| W | Move camera up                              |
+| A | Move camera left                            |
+| S | Move camera down                            |
+| D | Move camera right                           |
+| Drag Mouse | Create collider (in collider mode) |
+| P | Play level (enter play mode)                |
+| ESC | Return to editor (while in play mode)     |
+
 
 ## Gameplay
 
@@ -119,9 +142,15 @@ Manages tiles, backgrounds, and world boundaries.
 
 ![Level 3](level3.png)
 
+### Level Editor
+
+![Level Editor](levelEditor.png)
+
 ### Victory Screen
 
 ![Game Win](GameWin.png)
+
+
 
 ## AI Usage
 
