@@ -48,11 +48,15 @@ public class Collectible : Entity
 
         Game g = Game.Instance; 
 
-        g.entities.fruitCount--;
+        if(!g.levelEditor.isPlaying)
+        {
+            g.entities.fruitCount--;
 
-        if(g.entities.fruitCount == 0){
-            g.NextLevel();
+            if(g.entities.fruitCount == 0){
+                g.NextLevel();
+            }
         }
+
     }
 
 

@@ -13,6 +13,10 @@ public class LevelEditorScreen : IScreen
         Tile
     }
 
+    private bool _isPlaying = false;
+    public bool isPlaying => _isPlaying;
+    private const string _editorLevelName = "EditorLevel";
+
     private EditMode _mode = EditMode.Collider;
 
     private Camera2D Camera => Game.Instance.mainCamera;
@@ -40,11 +44,43 @@ public class LevelEditorScreen : IScreen
 
     public void Update(float dt, InputManager input)
     {
+
+        if (input.IsKeyPressed(KeyCode.P))
+        {
+            if (!_isPlaying)
+            {
+                Game.Instance.SaveLevel(_editorLevelName);
+                _isPlaying = true;
+            }
+        }
+
+        if (input.IsKeyPressed(KeyCode.Escape))
+        {
+            if (_isPlaying)
+            {
+                _isPlaying = false;
+                Game.Instance.LoadLevel(_editorLevelName);
+            }
+        }
+
+        if (_isPlaying)
+        {
+            Game g = Game.Instance;
+
+            g.background.Update(dt);
+            g.entities.Update(dt, input);
+
+            return; 
+        }
+
+
         HandleModeSwitch(input);
         HandleCamera(input, dt);
         HandleSwitchObject(input);
 
         _mouseWorld = GetMouseWorld(input);
+
+
 
         // ---------------- COLLIDER DRAG ----------------
         if (_mode == EditMode.Collider)
@@ -76,12 +112,12 @@ public class LevelEditorScreen : IScreen
 
         if(input.IsKeyPressed(KeyCode.J))
         {
-            Game.Instance.SaveLevel("EditorLevel");
+            Game.Instance.SaveLevel(_editorLevelName);
         }
 
         if(input.IsKeyPressed(KeyCode.K))
         {
-            Game.Instance.LoadLevel("EditorLevel");
+            Game.Instance.LoadLevel(_editorLevelName);
         }
 
         if(input.IsKeyPressed(KeyCode.M))
@@ -98,9 +134,13 @@ public class LevelEditorScreen : IScreen
         Game.Instance.tiles.Render(renderer, sdl);
         Game.Instance.entities.Render(renderer, sdl);
 
-        DrawCursorPreview(renderer, sdl);
-
-        DrawUI();
+        if (!_isPlaying)
+        {
+            DrawCursorPreview(renderer, sdl);
+            DrawUI();
+        }else{
+            Game.Instance.defaultBlackFont.DrawText("ESC = BACK TO EDITOR", 5, 5,1);
+        }
     }
 
     // -----------------Draw UI ----------------
@@ -136,6 +176,7 @@ public class LevelEditorScreen : IScreen
 
         g.defaultBlackFont.DrawText("J = SAVE LEVEL", 5, startY,scale); startY+= gapY;
         g.defaultBlackFont.DrawText("K = LOAD LEVEL", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("P = PLAY LEVEL", 5, startY,scale); startY+= gapY;
         g.defaultBlackFont.DrawText("M = GO TO TITLESCREEN", 5, startY,scale); startY+= gapY;
     }
 
@@ -333,6 +374,7 @@ public class LevelEditorScreen : IScreen
     private Vector2D<float> SnapVec(Vector2D<float> v)
         => new Vector2D<float>(Snap(v.X), Snap(v.Y));
 
-    private int Snap(float v)
-        => (int)(v / 16) * 16;
+private int Snap(float v)
+    => (int)(v / 16) * 16;
+
 }
