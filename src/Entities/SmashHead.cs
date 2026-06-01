@@ -33,7 +33,6 @@ public class SmashHead : Trap
     private Animation _bottomHitAnimation;
     private Animation _leftHitAnimation;
     private Animation _rightHitAnimation;
-    private Animation _idleAnimation;
 
     private SmashMoveType _moveType;
     private float _speed;
@@ -62,7 +61,6 @@ public class SmashHead : Trap
         float speed
     ) : base(x, y, width, height, textureId, idleAnimation)
     {
-        _idleAnimation = idleAnimation;
         _blinkAnimation = blinkAnimation;
         _topHitAnimation = topHitAnimation;
         _bottomHitAnimation = bottomHitAnimation;
@@ -77,7 +75,7 @@ public class SmashHead : Trap
 
         collider = new Collider(4, 4, _width - 9, _height - 9, ColliderType.Solid);
 
-        _animator.Add("idle", _idleAnimation);
+        //_animator.Add("idle", _idleAnimation);
         _animator.Add("blink", _blinkAnimation);
 
         _animator.Add("topHit", _topHitAnimation);

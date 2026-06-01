@@ -11,35 +11,35 @@ namespace TheAdventure;
 
 public class Game
 {
-    private static Game _instance;
+    private static Game _instance = null!;
 
-    public Camera2D mainCamera; 
+    public Camera2D mainCamera= null!;  
 
-    private Sdl _sdl;
-    private IntPtr _window;
-    private IntPtr _renderer;
-    private Event _event;
+    private Sdl _sdl = null!;
+    private IntPtr _window = 0;
+    private IntPtr _renderer = 0;
+    private Event _event = default;
     private int _baseWidth = 400,_baseHeight = 224;
     private bool _quit = false;
 
 
     //Managers
-    private InputManager   _input;
-    private TextureManager _textures;
-    private EntityManager  _entities;
-    private TileManager    _tiles;
-    private TileSet        _tileset;
-    private ScreenManager  _screens;
-    private BackgroundManager _background;
+    private InputManager   _input    = null!;
+    private TextureManager _textures = null!;
+    private EntityManager  _entities = null!;
+    private TileManager    _tiles    = null!;
+    private TileSet        _tileset  = null!;
+    private ScreenManager  _screens  = null!;
+    private BackgroundManager _background = null!;
 
     //Screens
-    public GameScreen            gameScreen;
-    public TitleScreen           titleScreen;
-    public LevelEditorScreen     levelEditor;
+    public GameScreen            gameScreen  = null!;
+    public TitleScreen           titleScreen = null!;
+    public LevelEditorScreen     levelEditor = null!;
 
     //Default Font
-    public TextureFont  defaultBlackFont;
-    public TextureFont  defaultWhiteFont;
+    public TextureFont  defaultBlackFont = null!;
+    public TextureFont  defaultWhiteFont = null!;
 
     private Stopwatch _timer = new();
     private ulong _frames = 0;

@@ -6,7 +6,7 @@ namespace TheAdventure;
 
 public class ScreenManager
 {
-    private IScreen _currentScreen;
+    private IScreen _currentScreen = null!;
 
     public void SetScreen(IScreen newScreen)
     {

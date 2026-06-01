@@ -10,7 +10,7 @@ public abstract class Entity
     protected Vector2D<float> _position;
     protected Vector2D<float> _velocity;
 
-    public Collider? collider;
+    public Collider collider = null!;
 
     public bool isActive = true;
     public bool isStatic = false;

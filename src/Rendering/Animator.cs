@@ -6,8 +6,8 @@ public class Animator
 {
     private readonly Dictionary<string, Animation> _animations = new();
 
-    private Animation _current;
-    private string _currentName;
+    private Animation _current = null!;
+    private string _currentName = "";
 
     public void Add(string name, Animation animation)
     {
