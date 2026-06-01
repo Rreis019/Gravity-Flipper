@@ -33,6 +33,8 @@ public class GameScreen : IScreen
         }else{
             if(input.IsKeyPressed(KeyCode.Return))
             {
+                g.currentLevel = 0;
+                g.isGameWon = false;
                 g.screens.SetScreen(Game.Instance.titleScreen);
             }
         }

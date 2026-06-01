@@ -55,7 +55,7 @@ public class Game
         "levels/level2",
         "levels/level3"
     };
-    private int currentLevel = 0;
+    public int currentLevel = 0;
     private bool _restartLevel = false;
     private bool _nextLevel = false;
 
