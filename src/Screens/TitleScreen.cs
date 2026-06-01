@@ -57,7 +57,7 @@ public class TitleScreen : IScreen
             g.screens.SetScreen(g.levelEditor);
         }
 
-
+        Game.Instance.background.Update(dt);
         //Game.Instance.entities.Update(dt, input);
     }
 
@@ -67,6 +67,7 @@ public class TitleScreen : IScreen
 
         //g.defaultBlackFont.DrawText("PRESS SPACE TO START", 10,10);
         //g.defaultBlackFont.DrawText("PRESS E TO GO LEVEL EDITOR", 10,30);
+        Game.Instance.background.Render();
         Game.Instance.tiles.Render(renderer, sdl);
         //Game.Instance.entities.Render(renderer, sdl);
     
@@ -111,7 +112,7 @@ public class TitleScreen : IScreen
             _QuitBtnTextureData,x -  (int)(_QuitBtnTextureData.Width * 0.25f),
             y,0.5f
         )){
-
+            g.QuitGame();
         }
 
     }

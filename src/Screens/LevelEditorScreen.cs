@@ -30,8 +30,13 @@ public class LevelEditorScreen : IScreen
     public void OnEnter() { 
         Game.Instance.entities.Clear();
         Game.Instance.tiles.Clear();
+        Game.Instance.SetWhiteBackgroundColor();
+        Collider.debugRender = true;
     }
-    public void OnExit() { }
+    public void OnExit() { 
+        Game.Instance.SetDefaultBackgroundColor();
+        Collider.debugRender = false;
+    }
 
     public void Update(float dt, InputManager input)
     {
@@ -69,15 +74,21 @@ public class LevelEditorScreen : IScreen
                 Delete(_mouseWorld);
         }
 
-        if(input.IsKeyPressed(KeyCode.S))
+        if(input.IsKeyPressed(KeyCode.J))
         {
-            Game.Instance.SaveLevel("level1");
+            Game.Instance.SaveLevel("EditorLevel");
         }
 
-        if(input.IsKeyPressed(KeyCode.L))
+        if(input.IsKeyPressed(KeyCode.K))
         {
-            Game.Instance.LoadLevel("tutorial");
+            Game.Instance.LoadLevel("EditorLevel");
         }
+
+        if(input.IsKeyPressed(KeyCode.M))
+        {
+            Game.Instance.screens.SetScreen(Game.Instance.titleScreen);
+        }
+
 
         Game.Instance.entities.RemoveInactivesEntities();
     }
@@ -121,10 +132,11 @@ public class LevelEditorScreen : IScreen
         g.defaultBlackFont.DrawText("LEFT CLICK = PLACE", 5, startY,scale); startY+= gapY;
         g.defaultBlackFont.DrawText("RIGHT CLICK = DELETE", 5, startY,scale); startY+= gapY;
 
-        g.defaultBlackFont.DrawText("Q,E = CHANGE OBJECT", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("Q OR E = CHANGE OBJECT", 5, startY,scale); startY+= gapY;
 
-        g.defaultBlackFont.DrawText("S = SAVE LEVEL", 5, startY,scale); startY+= gapY;
-        g.defaultBlackFont.DrawText("L = LOAD LEVEL", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("J = SAVE LEVEL", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("K = LOAD LEVEL", 5, startY,scale); startY+= gapY;
+        g.defaultBlackFont.DrawText("M = GO TO TITLESCREEN", 5, startY,scale); startY+= gapY;
     }
 
 

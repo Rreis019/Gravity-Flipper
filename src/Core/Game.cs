@@ -22,6 +22,7 @@ public class Game
     private int _baseWidth = 400,_baseHeight = 224;
     private bool _quit = false;
 
+
     //Managers
     private InputManager   _input;
     private TextureManager _textures;
@@ -29,6 +30,7 @@ public class Game
     private TileManager    _tiles;
     private TileSet        _tileset;
     private ScreenManager  _screens;
+    private BackgroundManager _background;
 
     //Screens
     public GameScreen            gameScreen;
@@ -42,8 +44,20 @@ public class Game
     private Stopwatch _timer = new();
     private ulong _frames = 0;
 
-    private string currentLevel = "";
+
+    private int _backgroundR = 0,_backgroundG = 0,_backgroundB = 0;
+
+    //Levels
+    public bool isGameWon = false;
+    private string[] levels = new string[]
+    {
+        "levels/level1",
+        "levels/level2",
+        "levels/level3"
+    };
+    private int currentLevel = 0;
     private bool _restartLevel = false;
+    private bool _nextLevel = false;
 
     //Getters
     public IntPtr sdlImage { get; }
@@ -54,6 +68,7 @@ public class Game
     public EntityManager entities => _entities;
     public TileManager tiles => _tiles;
     public InputManager input => _input;
+    public BackgroundManager background => _background;
 
     public TileSet tileset => _tileset;
     public ScreenManager screens => _screens;
@@ -90,6 +105,7 @@ public class Game
         _tileset = new TileSet("assets/Terrain/Terrain (16x16).png","assets/Terrain/tiles.txt");
         _tiles = new TileManager(_tileset);
         _screens = new ScreenManager();
+        _background = new BackgroundManager();
 
         //Initialize Fonts
         defaultBlackFont = new TextureFont(
@@ -106,7 +122,6 @@ public class Game
             10
         );
 
-
         //Initialize Screens
         gameScreen =  new GameScreen();
         titleScreen = new TitleScreen();
@@ -114,8 +129,9 @@ public class Game
 
         _screens.SetScreen(titleScreen);
 
-
         mainCamera = new Camera2D();
+
+        SetDefaultBackgroundColor();
     }
 
 
@@ -201,7 +217,7 @@ public class Game
     {
         var r = (Renderer*)_renderer;
 
-        _sdl.SetRenderDrawColor(r, 255, 255, 255, 255);
+        _sdl.SetRenderDrawColor(r, (byte)_backgroundR,(byte)_backgroundG, (byte)_backgroundB, 255);
         _sdl.RenderClear(r);
 
         _screens.Render(_renderer,_sdl);
@@ -211,9 +227,23 @@ public class Game
 
         if(_restartLevel){
             _restartLevel = false;
-            LoadLevel(currentLevel);
+            LoadLevel(levels[currentLevel]);
+        }
+
+        if(_nextLevel == true){
+            NextLevelInternal();
         }
     }
+
+    public void SetBackgroundColor(int r,int g,int b)
+    {
+        _backgroundR = r;
+        _backgroundG = g;
+        _backgroundB = b;
+    }
+
+    public void SetWhiteBackgroundColor(){SetBackgroundColor(255,255,255);}
+    public void SetDefaultBackgroundColor(){SetBackgroundColor(33,31,48);}
 
     public void SaveLevel(string levelName)
     {
@@ -224,12 +254,36 @@ public class Game
         _tiles.SaveTilesFile(tileFile);
     }
 
+    private void NextLevelInternal()
+    {
+        currentLevel++;
+
+        if(currentLevel == levels.Length){
+            isGameWon = true;
+            _nextLevel = false;
+            return;
+        }
+
+        LoadLevel(levels[currentLevel]);
+    
+        _nextLevel = false;
+
+    }
+
+    public void QuitGame()
+    {
+        _quit = true;
+    }
+
+    public void NextLevel()
+    {
+        _nextLevel = true;
+    }
+
     public void LoadLevel(string levelName)
     {
         string entityFile = $"{levelName}.ent";
         string tileFile = $"{levelName}.tiles";
-
-        currentLevel = levelName;
 
         _entities.LoadEntitiesFile(entityFile);
         _tiles.LoadTilesFile(tileFile);
@@ -238,6 +292,11 @@ public class Game
     public void RestartLevel()
     {
         _restartLevel = true;
+    }
+
+    public void LoadCurrentLevel()
+    {
+        RestartLevel();
     }
 
     private unsafe void Shutdown()

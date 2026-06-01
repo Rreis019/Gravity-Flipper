@@ -44,7 +44,15 @@ public class Collectible : Entity
         this.isActive = false;
 
         //TODO : Spawn Particle
+        //...
 
+        Game g = Game.Instance; 
+
+        g.entities.fruitCount--;
+
+        if(g.entities.fruitCount == 0){
+            g.NextLevel();
+        }
     }
 
 

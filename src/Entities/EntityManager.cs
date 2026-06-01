@@ -10,6 +10,8 @@ public class EntityManager
 {
     private readonly List<Entity> _entities = new();
 
+    public int fruitCount = 0;
+
     public void Add(Entity entity)
     {
         _entities.Add(entity);
@@ -224,6 +226,7 @@ public class EntityManager
             return;
 
         _entities.Clear();
+        fruitCount = 0;
 
         using StreamReader reader = new StreamReader(path);
 
@@ -259,6 +262,10 @@ public class EntityManager
                 Entity entity = EntityFactory.Create(id, x, y);
 
                 Add(entity);
+
+                if (entity is Collectible)
+                    fruitCount++;
+
             }
         }
     }

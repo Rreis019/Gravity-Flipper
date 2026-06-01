@@ -20,6 +20,8 @@ public class Collider
 
     public ColliderType type;
 
+    public static bool debugRender = false;
+
     public Collider(float offsetX_,float offsetY_,float width, float height, ColliderType type = ColliderType.Solid)
     {
         this.offsetX = offsetX_;
@@ -66,6 +68,8 @@ public class Collider
 
     public void Render(IntPtr renderer, Sdl sdl, Entity entity)
     {
+        if(!Collider.debugRender){return;}
+
         unsafe
         {
             if(type == ColliderType.Solid) {sdl.SetRenderDrawColor((Renderer*)renderer, 255,0,0,255);}

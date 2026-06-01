@@ -6,92 +6,17 @@ namespace TheAdventure;
 
 public class GameScreen : IScreen
 {
-    private int _backgroundTextureId;
-    private TextureData _backgroundTextureData;
-    private float _backgroundScrollY = 0.0f;
+    private int _backBtnTextureId,_RestartBtnTextureId;
+    private TextureData _backBtnTextureData;
 
-
-
-    private void RenderBackground()
+    public void OnEnter()
     {
         Game g = Game.Instance;
+        _backBtnTextureId = Game.Instance.textures.LoadTexture(Path.Combine("assets/Menu/Buttons/", "Back.png"), out _backBtnTextureData);
+        _RestartBtnTextureId = Game.Instance.textures.LoadTexture(Path.Combine("assets/Menu/Buttons/", "Restart.png"), out _backBtnTextureData);
 
-        int minX = g.tiles.GetMinX();
-        int minY = g.tiles.GetMinY();
-
-        int maxX = g.tiles.GetMaxX();
-        int maxY = g.tiles.GetMaxY();
-
-        int texW = _backgroundTextureData.Width;
-        int texH = _backgroundTextureData.Height;
-
-        for (int y = minY - texH; y < maxY + texH; y += texH)
-        {
-            for (int x = minX - texW; x < maxX + texW; x += texW)
-            {
-                int drawY = (int)(y + (_backgroundScrollY % texH));
-
-
-                Rectangle<int> src = new Rectangle<int>(
-                    0,
-                    0,
-                    texW,
-                    texH
-                );
-
-                Rectangle<int> dest = new Rectangle<int>(
-                    x,
-                    drawY,
-                    texW,
-                    texH
-                );
-
-                Game.Instance.textures.Render(_backgroundTextureId,src,dest);
-            }
-        }
-    }
-
-
-    public   void OnEnter()
-    {
-
-        Game g = Game.Instance;
-
-        _backgroundTextureId = g.textures.LoadTexture(Path.Combine("assets/Background/", "Yellow.png"), out _backgroundTextureData);
-
-
-
-        //TODO : Just testing the entitites remove after and use levels
-        /*
-        Entity p = EntityFactory.Create(EntityId.Player,150,100);
-        Entity apple = EntityFactory.Create(EntityId.Apple,50,100);
-
-        Entity wall = (Entity)new InvisibleCollider(0,200,250,10);
-        Entity wall2 = (Entity)new InvisibleCollider(0,0,250,10);
-
-
-        Entity saw = EntityFactory.Create(EntityId.Saw,50,100);
-
-        Entity smashHead = EntityFactory.Create(EntityId.RockHead,90,100);
-
-        Entity spike = EntityFactory.Create(EntityId.Spike,90,100);
-
-
-
-        g.entities.Add(p);
-        g.entities.Add(apple);
-        g.entities.Add(wall);
-        g.entities.Add(wall2);
-
-        g.entities.Add(saw);
-        g.entities.Add(smashHead);
-
-        g.entities.Add(spike);
-        
-        g.tiles.Add(new Tile(0,0,0));
-        g.tiles.Add(new Tile(1,32,0));
-        */
-        g.LoadLevel("levels/level2");
+        g.LoadCurrentLevel();
+        Collider.debugRender = false;
     }
     
 
@@ -100,18 +25,130 @@ public class GameScreen : IScreen
 
     }
 
-
     public void Update(float dt, InputManager input)
     {
-        _backgroundScrollY += 30.0f * dt;
-        Game.Instance.entities.Update(dt, input);
+        Game g = Game.Instance;
+        if(!g.isGameWon){
+            g.entities.Update(dt, input);
+        }else{
+            if(input.IsKeyPressed(KeyCode.Return))
+            {
+                g.screens.SetScreen(Game.Instance.titleScreen);
+            }
+        }
+
+        g.background.Update(dt);
     }
 
     public void Render(IntPtr renderer, Sdl sdl)
     {
-        RenderBackground();
+        Game g = Game.Instance;
 
-        Game.Instance.tiles.Render(renderer, sdl);
-        Game.Instance.entities.Render(renderer, sdl);
+        g.background.Render();
+        g.tiles.Render(renderer, sdl);
+        g.entities.Render(renderer, sdl);
+        
+        if(g.isGameWon){
+            ShowWinMessage(renderer,sdl);
+        }
+
+        if(GUI.RenderButton(
+            _backBtnTextureId,_backBtnTextureId,
+            _backBtnTextureData,5,5,0.5f
+        )){
+             g.screens.SetScreen(g.titleScreen);
+        }
+
+        if(GUI.RenderButton(
+            _RestartBtnTextureId,_RestartBtnTextureId,
+            _backBtnTextureData,17,5,0.5f
+        )){
+             g.RestartLevel();
+        }
     }
+
+    private void ShowWinMessage(IntPtr renderer, Sdl sdl)
+    {
+        unsafe
+        {
+            Game g = Game.Instance;
+
+            int x = g.baseWidth / 2;
+            int y = g.baseHeight / 2;
+
+            float scale = 1.0f;
+
+            int charWidth = (int)(8 * scale);
+
+            // Linha mais longa:
+            // "PRESS ENTER TO RETURN TO THE MAIN MENU."
+            int longestLineChars = 38;
+
+            int textWidth = longestLineChars * charWidth;
+            int textHeight = 3 * 20;
+
+            int padding = 16;
+
+            int boxX = x - textWidth / 2 - padding;
+            int boxY = y - padding;
+
+            int boxWidth = textWidth + padding * 2;
+            int boxHeight = textHeight + padding * 2;
+
+            var r = (Renderer*)renderer;
+
+            // Borda branca (retângulo exterior)
+            sdl.SetRenderDrawColor(r, 255, 255, 255, 255);
+
+            var borderRect = new Rectangle<int>(
+                boxX - 2,
+                boxY - 2,
+                boxWidth + 4,
+                boxHeight + 4
+            );
+
+            sdl.RenderFillRect(r, ref borderRect);
+
+            // Fundo escuro (33,31,48)
+            sdl.SetRenderDrawColor(r, 33, 31, 48, 255);
+
+            var fillRect = new Rectangle<int>(
+                boxX,
+                boxY,
+                boxWidth,
+                boxHeight
+            );
+
+            sdl.RenderFillRect(r, ref fillRect);
+
+            // Texto
+            int textY = y;
+
+            g.defaultWhiteFont.DrawText(
+                "ALL LEVELS COMPLETED!",
+                x - 8 * 21 / 2,
+                textY,
+                scale
+            );
+
+            textY += 20;
+
+            g.defaultWhiteFont.DrawText(
+                "THANK YOU FOR PLAYING.",
+                x - 8 * 22 / 2,
+                textY,
+                scale
+            );
+
+            textY += 20;
+
+            g.defaultWhiteFont.DrawText(
+                "PRESS ENTER TO RETURN TO THE MAIN MENU.",
+                x - 8 * 38 / 2,
+                textY,
+                scale
+            );
+        }
+    }
+
 }
